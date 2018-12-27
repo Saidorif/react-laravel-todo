@@ -39,7 +39,7 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $inputs = $request->all();
-        $inputs['image'] = 'img/google.png';
+        $inputs['image'] = 'img/google.jpg';
         $post = Post::create($inputs);
         return response()->json(['success' =>'created'], 200);
         
@@ -57,17 +57,6 @@ class PostController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -76,7 +65,14 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $post = Post::findOrFail($id);
+        $inputs = $request->all();
+        $post->title = $inputs['title'];
+        $post->text = $inputs['text'];
+        $post->state = $inputs['state'];
+        $post->update();
+        return response()->json(['success' =>$post], 200);
+        
     }
 
     /**
@@ -87,6 +83,8 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        $post->delete();
+        return response()->json(['success'=>'deleted'], 200);
     }
 }
