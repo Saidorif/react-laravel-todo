@@ -1,31 +1,53 @@
 import React, { Component } from "react";
+import SingleNew from "./SingleNew";
 
 class News extends Component {
+    constructor() {
+        super();
+        this.state = {
+            posts: []
+        };
+        this.deletePost = this.deletePost.bind(this);
+    }
+    editPost() {
+        alert("edit");
+    }
+    componentDidMount() {
+        fetch("api/admin/posts")
+            .then(res => res.json())
+            .then(res => {
+                this.setState({ posts: res });
+            });
+    }
+    deletePost(id) {
+        if (confirm("Are you sure")) {
+            fetch(`api/admin/posts/${id}`, {
+                method: "delete"
+            })
+                .then(res =>
+                    fetch("api/admin/posts")
+                        .then(response => response.json())
+                        .then(response => this.setState({ posts: response }))
+                )
+                .catch(err => console.log(err))
+                .catch(err => console.log(err));
+        }
+    }
     render() {
         return (
             <div className="container">
                 <div className="row">
-                    <div className="col-md-4">
-                        <h2>Heading</h2>
-                        <p>
-                            Donec id elit non mi porta gravida at eget metus.
-                            Fusce dapibus, tellus ac cursus commodo, tortor
-                            mauris condimentum nibh, ut fermentum massa justo
-                            sit amet risus. Etiam porta sem malesuada magna
-                            mollis euismod. Donec sed odio dui.
-                        </p>
-                        <p>
-                            <a
-                                className="btn btn-secondary"
-                                href="#"
-                                role="button"
-                            >
-                                View details &raquo;
-                            </a>
-                        </p>
-                    </div>
+                    {this.state.posts.map(post => {
+                        return (
+                            <SingleNew
+                                key={post.id}
+                                post={post}
+                                editPost={this.editPost}
+                                deletePost={this.deletePost}
+                            />
+                        );
+                    })}
                 </div>
-                <hr />
             </div>
         );
     }
